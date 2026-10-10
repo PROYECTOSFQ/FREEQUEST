@@ -10,8 +10,9 @@
  *  4. Correr `node scripts/build.mjs` y publicar.
  */
 
-// Carpeta "11. Proyectos realizados por alumnos"
-const ROOT_FOLDER_ID = '1-vDfN7e6xXkC8lGYPCwlr3q4lBbghrcz';
+// ID de la carpeta "11. Proyectos realizados por alumnos" (lo que va después de
+// /folders/ en la URL). Pegalo solo en script.google.com, no en este archivo del repo.
+const ROOT_FOLDER_ID = 'PEGAR_ACA_EL_ID_DE_LA_CARPETA'; // no subir el ID real a GitHub
 
 // Archivos que no son trabajos de alumnos (devoluciones, rúbricas, etc.)
 const SKIP = /^(devoluci[oó]n|rubrica|r[uú]brica|actividades repaso)/i;
