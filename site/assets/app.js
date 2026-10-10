@@ -55,7 +55,7 @@ function sessionSet(year, pw) {
 }
 
 // ---------------------------------------------------------------- Drive
-const prettyName = (name) => name.replace(/\.[a-z0-9]{2,5}$/i, "").replace(/[_]+/g, " ").replace(/\s+/g, " ").trim();
+const prettyName = (name) => name.replace(/(\.(pdf|docx?|pptx?|xlsx?|png|jpe?g|gif|heic|mov|mp4|txt|zip))+$/i, "").replace(/\.[a-z0-9]{2,5}$/i, "").replace(/[_]+/g, " ").replace(/\s+/g, " ").trim();
 const thumbUrl = (id) => `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w480`;
 const openUrl = (item) =>
   item.mimeType === "application/vnd.google-apps.folder"
@@ -276,7 +276,8 @@ function buildWorld(data) {
 
     if (t.items.length) {
       const box = { x: TOPIC_D * 0.15, y: TOPIC_D * 0.3, w: TOPIC_D * 0.7, h: TOPIC_D * 0.53 };
-      const { cols, cw } = gridFor(t.items.length, box.w, box.h);
+      const { cols, cw: fitW } = gridFor(t.items.length, box.w, box.h);
+      const cw = Math.min(fitW, 130); // pocos trabajos: tarjetas de tamaño razonable
       const rows = Math.ceil(t.items.length / cols);
       const gw = cols * cw + (cols - 1) * 4;
       const gh = rows * cw * 0.85 + (rows - 1) * 4;

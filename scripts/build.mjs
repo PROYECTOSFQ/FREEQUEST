@@ -66,6 +66,7 @@ function cleanTitle(title) {
   t = t.replace(/^["“”']+|["“”']+$/g, "").trim();
   if (!t) t = title.trim();
   t = t.replace(/\bempres$/i, "empresa"); // título cortado en Drive
+  if (t === t.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(t)) t = t.toLowerCase(); // "GEOPOLÍTICA" -> "Geopolítica"
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
