@@ -1,0 +1,6 @@
+# Datos sin cifrar y contraseñas: NUNCA subir al repositorio
+data/projects.source.json
+config/passwords.json
+
+node_modules/
+.DS_Store

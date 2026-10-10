@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Galería de Proyectos · FreeQuest Academy</title>
+  <meta name="description" content="Galería de proyectos de los alumnos de FreeQuest Academy, organizada por Year.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#051e35">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <!-- ============ PORTADA ============ -->
+  <main id="home">
+    <section class="hero">
+      <div class="hero__text">
+        <div class="wordmark" aria-label="FreeQuest Academy">
+          <span class="wordmark__name"><span class="wm-free">FREE</span><span class="wm-quest">QUEST</span></span>
+          <span class="wordmark__sub">ACADEMY</span>
+        </div>
+        <h1>GALERÍA DE PROYECTOS</h1>
+        <p class="hero__tagline">Distintos lugares, un mismo camino</p>
+      </div>
+      <div class="hero__art" aria-hidden="true">
+        <svg viewBox="0 0 400 400" class="globe">
+          <circle cx="200" cy="200" r="170" class="globe__line"/>
+          <ellipse cx="200" cy="200" rx="170" ry="60" class="globe__line"/>
+          <ellipse cx="200" cy="200" rx="170" ry="120" class="globe__line"/>
+          <ellipse cx="200" cy="200" rx="60" ry="170" class="globe__line"/>
+          <ellipse cx="200" cy="200" rx="120" ry="170" class="globe__line"/>
+          <line x1="30" y1="200" x2="370" y2="200" class="globe__line"/>
+          <line x1="200" y1="30" x2="200" y2="370" class="globe__line"/>
+          <g class="globe__orbit">
+            <circle cx="200" cy="200" r="105" class="globe__dash"/>
+            <circle cx="295" cy="155" r="11" class="globe__node"/>
+            <circle cx="105" cy="155" r="11" class="globe__node"/>
+            <circle cx="248" cy="292" r="11" class="globe__node"/>
+          </g>
+          <circle cx="200" cy="200" r="7" class="globe__center"/>
+        </svg>
+        <span class="tag tag--a">Proyecto</span>
+        <span class="tag tag--b">Idea</span>
+      </div>
+    </section>
+
+    <section class="intro">
+      <h2>Mirá lo que crean tus compañeros</h2>
+      <p>En FreeQuest valoramos cada proyecto como una forma única de aprender, investigar y crear. Acá vas a encontrar los trabajos de tus compañeros de Year, hechos desde distintos rincones del mundo. Porque aunque estemos lejos, aprendemos juntos.</p>
+      <ul class="pills">
+        <li>Aprender</li>
+        <li>Investigar</li>
+        <li>Crear</li>
+      </ul>
+      <a class="btn-cta" href="#years">VER LA GALERÍA</a>
+    </section>
+
+    <section class="years" id="years">
+      <h2>Elegí tu Year</h2>
+      <div class="years__grid" id="yearGrid"></div>
+      <p class="years__hint">Elegí tu Year e ingresá tu contraseña para ver los proyectos.</p>
+    </section>
+
+    <footer class="foot">© FreeQuest Academy · Galería de proyectos de alumnos</footer>
+  </main>
+
+  <!-- ============ CONTRASEÑA ============ -->
+  <dialog id="lockDialog" class="lock">
+    <form id="lockForm" method="dialog" class="lock__card">
+      <button type="button" class="lock__close" id="lockClose" aria-label="Cerrar">×</button>
+      <div class="lock__badge" id="lockBadge">Y1</div>
+      <h3 id="lockTitle">Year 1</h3>
+      <p>Ingresá la contraseña de tu Year.</p>
+      <label class="sr-only" for="lockInput">Contraseña</label>
+      <input id="lockInput" type="password" autocomplete="current-password" placeholder="Contraseña" required>
+      <p class="lock__error" id="lockError" role="alert"></p>
+      <button type="submit" class="btn-primary" id="lockSubmit">Entrar</button>
+    </form>
+  </dialog>
+
+  <!-- ============ GALERÍA (lienzo con zoom) ============ -->
+  <section id="gallery" class="gallery" hidden>
+    <header class="gbar">
+      <button class="gbar__home" id="backHome" aria-label="Volver al inicio">
+        <span class="wm-free">FREE</span><span class="wm-quest">QUEST</span>
+      </button>
+      <div class="gbar__title">
+        <strong id="gTitle">Year 1</strong>
+        <span id="gStats"></span>
+      </div>
+      <div class="gbar__actions">
+        <button class="chip" id="toggleView" aria-pressed="false">Ver como lista</button>
+        <button class="chip chip--ghost" id="logout">Salir</button>
+      </div>
+    </header>
+
+    <div class="stage" id="stage" tabindex="0" aria-label="Mapa de proyectos. Usá las flechas para recorrerlo.">
+      <div class="stars" aria-hidden="true"></div>
+      <div class="world" id="world"></div>
+    </div>
+
+    <div class="listview" id="listview" hidden>
+      <div class="listview__search">
+        <input id="search" type="search" placeholder="Buscar proyecto o alumno…" aria-label="Buscar">
+      </div>
+      <div id="listContent"></div>
+    </div>
+
+    <nav class="pathbar" id="pathbar" aria-label="Recorrido">
+      <button class="pathbar__btn" id="prevStep" aria-label="Anterior">‹</button>
+      <div class="pathbar__label" id="stepLabel">Vista general</div>
+      <button class="pathbar__btn" id="nextStep" aria-label="Siguiente">›</button>
+      <span class="pathbar__sep"></span>
+      <button class="pathbar__btn pathbar__btn--sm" id="zoomOut" aria-label="Alejar">−</button>
+      <button class="pathbar__btn pathbar__btn--sm" id="overview" aria-label="Vista general">◎</button>
+      <button class="pathbar__btn pathbar__btn--sm" id="zoomIn" aria-label="Acercar">+</button>
+    </nav>
+    <p class="hint" id="hint">Tocá un proyecto para acercarte · Arrastrá para moverte · Usá ‹ › para recorrer</p>
+  </section>
+
+  <!-- ============ VISOR DE TRABAJO ============ -->
+  <div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-labelledby="vTitle">
+    <div class="viewer__top">
+      <div class="viewer__meta">
+        <span class="viewer__topic" id="vTopic"></span>
+        <strong id="vTitle"></strong>
+      </div>
+      <div class="viewer__actions">
+        <span class="viewer__count" id="vCount"></span>
+        <a class="chip chip--ghost" id="vOpen" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
+        <button class="viewer__close" id="vClose" aria-label="Cerrar">×</button>
+      </div>
+    </div>
+    <div class="viewer__body">
+      <button class="viewer__nav viewer__nav--prev" id="vPrev" aria-label="Trabajo anterior">‹</button>
+      <div class="viewer__frame" id="vFrame"></div>
+      <button class="viewer__nav viewer__nav--next" id="vNext" aria-label="Trabajo siguiente">›</button>
+    </div>
+  </div>
+
+  <script src="assets/app.js" type="module"></script>
+</body>
+</html>
