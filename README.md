@@ -12,6 +12,8 @@ Un alumno de Year 1 no puede ver los proyectos de Year 12, y al revés.
 - **Visor integrado:** cada trabajo (PDF, Docs, Slides, imágenes, videos) se abre dentro de la web, y se puede
   pasar al siguiente sin salir.
 - **Vista lista** con buscador por proyecto o por alumno.
+- **Portada de cada Year** con su propio enlace para mandar a cada grupo, por ejemplo
+  `https://proyectosfq.github.io/FREEQUEST/#year-8`. La tarjeta del Year se da vuelta para poner la contraseña.
 
 ## Estructura
 

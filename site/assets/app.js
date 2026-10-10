@@ -129,69 +129,216 @@ function loadThumbs(root) {
 }
 
 // ---------------------------------------------------------------- portada
+document.documentElement.classList.add("js");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// FREEQUEST entra letra por letra
+document.querySelectorAll("#home .wordmark__name span").forEach((part) => {
+  const text = part.textContent;
+  part.textContent = "";
+  [...text].forEach((c) => {
+    const ch = el("span", "ch", c);
+    ch.style.setProperty("--i", part.parentElement.querySelectorAll(".ch").length);
+    part.append(ch);
+  });
+});
+
+// "Distintos lugares, ..." va cambiando como si se escribiera
+(function typewriter() {
+  const node = $("#typed");
+  const phrases = ["un mismo camino", "muchas ideas", "un mismo equipo", "un mismo camino"];
+  if (reduceMotion) return;
+  let p = 0, i = phrases[0].length, deleting = true;
+  setTimeout(function tick() {
+    const word = phrases[p];
+    if (deleting) {
+      i--;
+      if (i <= 0) { deleting = false; p = (p + 1) % phrases.length; }
+    } else {
+      i++;
+      if (i >= phrases[p].length) { deleting = true; node.textContent = phrases[p]; setTimeout(tick, 2600); return; }
+    }
+    node.textContent = (deleting ? word : phrases[p]).slice(0, Math.max(i, 0));
+    setTimeout(tick, deleting ? 45 : 85);
+  }, 2600);
+})();
+
+// Las secciones aparecen al llegar con el scroll (siempre quedan visibles)
+const io = "IntersectionObserver" in window
+  ? new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+    }), { threshold: 0.2 })
+  : null;
+document.querySelectorAll(".reveal").forEach((n) => (io ? io.observe(n) : n.classList.add("is-in")));
+
+// El globo sigue un poquito al mouse
+const heroArt = $("#heroArt");
+window.addEventListener("pointermove", (e) => {
+  if (reduceMotion || !heroArt || !gallery.hidden) return;
+  const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+  heroArt.style.transform = `translate(${x * -18}px, ${y * -18}px) rotate(${x * 4}deg)`;
+});
+
+// Cielo con estrellas que titilan y alguna estrella fugaz
+(function sky() {
+  const c = $("#sky");
+  const ctx = c.getContext("2d");
+  let stars = [], shooting = null, w = 0, h = 0, mx = 0, my = 0;
+  function resize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    w = innerWidth; h = innerHeight;
+    c.width = w * dpr; c.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    stars = Array.from({ length: Math.round((w * h) / 9000) }, () => ({
+      x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.4 + 0.3,
+      t: Math.random() * Math.PI * 2, s: 0.5 + Math.random() * 1.5, d: 0.3 + Math.random() * 0.7,
+      gold: Math.random() < 0.15,
+    }));
+  }
+  resize();
+  addEventListener("resize", resize);
+  addEventListener("pointermove", (e) => { mx = e.clientX / w - 0.5; my = e.clientY / h - 0.5; });
+  function frame(t) {
+    if (gallery.hidden) {
+      ctx.clearRect(0, 0, w, h);
+      for (const st of stars) {
+        const a = reduceMotion ? 0.7 : 0.35 + 0.65 * Math.abs(Math.sin(t / 1000 * st.s + st.t));
+        ctx.globalAlpha = a;
+        ctx.fillStyle = st.gold ? "#f1bc70" : "#f6f2ea";
+        ctx.beginPath();
+        ctx.arc(st.x - mx * 30 * st.d, st.y - my * 30 * st.d, st.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (!reduceMotion) {
+        if (!shooting && Math.random() < 0.004) shooting = { x: Math.random() * w * 0.7, y: Math.random() * h * 0.4, life: 0 };
+        if (shooting) {
+          const { x, y, life } = shooting;
+          const len = 120, px = x + life * 9, py = y + life * 4;
+          const g = ctx.createLinearGradient(px, py, px - len, py - len * 0.45);
+          g.addColorStop(0, "rgba(246,242,234,0.9)");
+          g.addColorStop(1, "rgba(246,242,234,0)");
+          ctx.globalAlpha = 1 - life / 60;
+          ctx.strokeStyle = g; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - len, py - len * 0.45); ctx.stroke();
+          if (++shooting.life > 60) shooting = null;
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (!reduceMotion) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+// Years en órbita
 const yearGrid = $("#yearGrid");
+const orbitHint = $("#orbitHint");
 const LOCK_PATH = "M12 2a5 5 0 0 0-5 5v3H5v12h14V10h-2V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 0 1 6 0v3z";
+let lastClick = null;
 for (let y = 1; y <= YEARS; y++) {
   const b = el("button", "year-tile");
   b.type = "button";
   b.dataset.year = y;
+  b.style.setProperty("--a", `${(y - 1) * 30 - 90}deg`);
   b.setAttribute("aria-label", `Year ${y}`);
-  b.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${LOCK_PATH}"/></svg>`;
-  b.append(el("span", null, `Y${y}`));
-  b.addEventListener("click", () => { location.hash = `year-${y}`; });
+  const inner = el("span", "year-tile__inner");
+  inner.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${LOCK_PATH}"/></svg>`;
+  inner.append(el("span", null, `Y${y}`));
+  b.append(inner);
+  b.addEventListener("mouseenter", () => { orbitHint.textContent = `Year ${y}`; });
+  b.addEventListener("mouseleave", () => { orbitHint.textContent = "Tocá tu Year"; });
+  b.addEventListener("click", (e) => {
+    lastClick = { x: e.clientX, y: e.clientY };
+    b.classList.add("is-chosen");
+    location.hash = `year-${y}`;
+  });
   yearGrid.append(b);
 }
 function refreshTiles() {
-  yearGrid.querySelectorAll(".year-tile").forEach((b) => b.classList.toggle("is-open", !!sessionGet(b.dataset.year)));
+  yearGrid.querySelectorAll(".year-tile").forEach((b) => {
+    b.classList.toggle("is-open", !!sessionGet(b.dataset.year));
+    b.classList.remove("is-chosen");
+  });
 }
 
-// ---------------------------------------------------------------- contraseña
-const lockDialog = $("#lockDialog");
+// ---------------------------------------------------------------- portada de cada Year
+const gate = $("#gate");
+const flip = $("#flip");
 const lockInput = $("#lockInput");
 const lockError = $("#lockError");
 const lockSubmit = $("#lockSubmit");
+const warp = $("#warp");
 let pendingYear = null;
 
-function askPassword(year) {
+function showGate(year) {
   pendingYear = year;
-  $("#lockBadge").textContent = `Y${year}`;
-  $("#lockTitle").textContent = `Year ${year}`;
+  $("#gateYearText").textContent = `YEAR ${year}`;
+  $("#gateBadge").textContent = `Y${year}`;
+  $("#gateMini").textContent = `Y${year}`;
   lockError.textContent = "";
   lockInput.value = "";
-  if (!lockDialog.open) lockDialog.showModal();
+  lockInput.type = "password";
+  flip.classList.remove("is-flipped", "is-unlocked");
+  $("#home").hidden = true;
+  gate.hidden = false;
+  gate.scrollTop = 0;
+  window.scrollTo(0, 0);
+  $("#gateFront").focus({ preventScroll: true });
+}
+function hideGate() {
+  gate.hidden = true;
+  $("#home").hidden = false;
+}
+function flipToForm() {
+  flip.classList.add("is-flipped");
+  setTimeout(() => lockInput.focus(), reduceMotion ? 0 : 450);
+}
+$("#gateFront").addEventListener("click", flipToForm);
+$("#pwEye").addEventListener("click", () => {
+  lockInput.type = lockInput.type === "password" ? "text" : "password";
   lockInput.focus();
+});
+
+// Círculo dorado que crece desde el Year y "lleva" a la galería
+function warpTo(x, y, then) {
+  if (reduceMotion) { then(); return; }
+  warp.style.setProperty("--x", `${x}px`);
+  warp.style.setProperty("--y", `${y}px`);
+  warp.className = "warp is-on";
+  setTimeout(() => {
+    then();
+    warp.className = "warp is-off";
+    setTimeout(() => { warp.className = "warp"; }, 650);
+  }, 700);
 }
 
 $("#lockForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const year = pendingYear;
   const pw = lockInput.value.trim();
-  if (!pw) return;
+  if (!pw) { lockError.textContent = "Escribí la contraseña de tu Year."; return; }
   lockSubmit.disabled = true;
   lockSubmit.textContent = "Abriendo…";
   lockError.textContent = "";
   try {
     const data = await decryptYear(await loadEncrypted(year), pw);
     sessionSet(year, pw);
-    lockDialog.close();
-    openGallery(data);
+    flip.classList.add("is-unlocked");
+    const r = flip.getBoundingClientRect();
+    warpTo(r.left + r.width / 2, r.top + r.height / 2, () => { hideGate(); openGallery(data); });
   } catch (err) {
     lockError.textContent = err instanceof SyntaxError || err.name === "OperationError"
-      ? "Contraseña incorrecta. Probá de nuevo."
+      ? "Esa no es la contraseña. Probá de nuevo."
       : err.message || "No se pudo abrir la galería.";
-    const card = $(".lock__card");
-    card.classList.remove("shake");
-    void card.offsetWidth;
-    card.classList.add("shake");
+    const back = $(".flip__back");
+    back.classList.remove("shake");
+    void back.offsetWidth;
+    back.classList.add("shake");
     lockInput.select();
   } finally {
     lockSubmit.disabled = false;
     lockSubmit.textContent = "Entrar";
   }
-});
-$("#lockClose").addEventListener("click", () => lockDialog.close());
-lockDialog.addEventListener("close", () => {
-  if (gallery.hidden && location.hash.startsWith("#year-")) history.replaceState(null, "", "#years");
 });
 
 // ---------------------------------------------------------------- galería
@@ -560,7 +707,7 @@ $("#vNext").addEventListener("click", () => { if (viewerIndex < state.flat.lengt
 
 // ---------------------------------------------------------------- teclado
 document.addEventListener("keydown", (e) => {
-  if (gallery.hidden || lockDialog.open) return;
+  if (gallery.hidden) return;
   if (e.target.matches?.("input")) return;
   if (!viewer.hidden) {
     if (e.key === "Escape") closeViewer();
@@ -582,8 +729,9 @@ async function route() {
   const year = m && Number(m[1]);
   if (!year || year < 1 || year > YEARS) {
     if (!gallery.hidden) closeGallery();
-    if (lockDialog.open) lockDialog.close();
+    hideGate();
     refreshTiles();
+    if (location.hash === "#years") $("#years").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
     return;
   }
   if (state.data?.year === year && !gallery.hidden) return;
@@ -591,13 +739,17 @@ async function route() {
   const saved = sessionGet(year);
   if (saved) {
     try {
-      openGallery(await decryptYear(await loadEncrypted(year), saved));
+      const data = await decryptYear(await loadEncrypted(year), saved);
+      const p = lastClick || { x: innerWidth / 2, y: innerHeight / 2 };
+      lastClick = null;
+      warpTo(p.x, p.y, () => { hideGate(); $("#home").hidden = true; openGallery(data); });
       return;
     } catch {
       sessionSet(year, null);
     }
   }
-  askPassword(year);
+  lastClick = null;
+  showGate(year);
 }
 window.addEventListener("hashchange", route);
 route();

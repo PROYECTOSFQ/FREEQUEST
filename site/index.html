@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
+  <canvas id="sky" class="sky" aria-hidden="true"></canvas>
+
   <!-- ============ PORTADA ============ -->
   <main id="home">
     <section class="hero">
@@ -22,64 +24,135 @@
           <span class="wordmark__name"><span class="wm-free">FREE</span><span class="wm-quest">QUEST</span></span>
           <span class="wordmark__sub">ACADEMY</span>
         </div>
-        <h1>GALERÍA DE PROYECTOS</h1>
-        <p class="hero__tagline">Distintos lugares, un mismo camino</p>
+        <h1 class="reveal">GALERÍA DE PROYECTOS</h1>
+        <p class="hero__tagline reveal">Distintos lugares, <span class="typed" id="typed">un mismo camino</span></p>
       </div>
-      <div class="hero__art" aria-hidden="true">
-        <svg viewBox="0 0 400 400" class="globe">
-          <circle cx="200" cy="200" r="170" class="globe__line"/>
-          <ellipse cx="200" cy="200" rx="170" ry="60" class="globe__line"/>
-          <ellipse cx="200" cy="200" rx="170" ry="120" class="globe__line"/>
-          <ellipse cx="200" cy="200" rx="60" ry="170" class="globe__line"/>
-          <ellipse cx="200" cy="200" rx="120" ry="170" class="globe__line"/>
-          <line x1="30" y1="200" x2="370" y2="200" class="globe__line"/>
-          <line x1="200" y1="30" x2="200" y2="370" class="globe__line"/>
-          <g class="globe__orbit">
-            <circle cx="200" cy="200" r="105" class="globe__dash"/>
-            <circle cx="295" cy="155" r="11" class="globe__node"/>
-            <circle cx="105" cy="155" r="11" class="globe__node"/>
-            <circle cx="248" cy="292" r="11" class="globe__node"/>
-          </g>
-          <circle cx="200" cy="200" r="7" class="globe__center"/>
-        </svg>
+      <div class="hero__art" id="heroArt">
+        <svg viewBox="0 0 400 400" class="globe" aria-hidden="true">
+            <circle cx="200" cy="200" r="170" class="globe__line"/>
+            <g class="globe__meridians">
+              <ellipse cx="200" cy="200" rx="60" ry="170" class="globe__line"/>
+              <ellipse cx="200" cy="200" rx="120" ry="170" class="globe__line"/>
+              <line x1="200" y1="30" x2="200" y2="370" class="globe__line"/>
+            </g>
+            <ellipse cx="200" cy="200" rx="170" ry="60" class="globe__line"/>
+            <ellipse cx="200" cy="200" rx="170" ry="120" class="globe__line"/>
+            <line x1="30" y1="200" x2="370" y2="200" class="globe__line"/>
+            <g class="globe__orbit">
+              <circle cx="200" cy="200" r="105" class="globe__dash"/>
+              <line x1="200" y1="200" x2="295" y2="155" class="globe__ray"/>
+              <line x1="200" y1="200" x2="105" y2="155" class="globe__ray"/>
+              <line x1="200" y1="200" x2="248" y2="292" class="globe__ray"/>
+              <circle cx="295" cy="155" r="11" class="globe__node"/>
+              <circle cx="105" cy="155" r="11" class="globe__node globe__node--2"/>
+              <circle cx="248" cy="292" r="11" class="globe__node globe__node--3"/>
+            </g>
+            <circle cx="200" cy="200" r="7" class="globe__center"/>
+          </svg>
         <span class="tag tag--a">Proyecto</span>
         <span class="tag tag--b">Idea</span>
       </div>
+      <a class="scroll-cue" href="#intro" aria-label="Bajar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5 12l7 7 7-7"/></svg>
+      </a>
     </section>
 
-    <section class="intro">
-      <h2>Mirá lo que crean tus compañeros</h2>
-      <p>En FreeQuest valoramos cada proyecto como una forma única de aprender, investigar y crear. Acá vas a encontrar los trabajos de tus compañeros de Year, hechos desde distintos rincones del mundo. Porque aunque estemos lejos, aprendemos juntos.</p>
+    <section class="intro" id="intro">
+      <h2 class="reveal">Mirá lo que crean tus compañeros</h2>
+      <p class="reveal">En FreeQuest valoramos cada proyecto como una forma única de aprender, investigar y crear. Acá vas a encontrar los trabajos de tus compañeros de Year, hechos desde distintos rincones del mundo. Porque aunque estemos lejos, aprendemos juntos.</p>
       <ul class="pills">
-        <li>Aprender</li>
-        <li>Investigar</li>
-        <li>Crear</li>
+        <li class="pill reveal"><span class="pill__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 5h7a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-7a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h7z"/></svg></span>Aprender</li>
+        <li class="pill reveal"><span class="pill__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></span>Investigar</li>
+        <li class="pill reveal"><span class="pill__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></span>Crear</li>
       </ul>
       <a class="btn-cta" href="#years">VER LA GALERÍA</a>
     </section>
 
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Aprender</span><i>✦</i><span>Investigar</span><i>✦</i><span>Crear</span><i>✦</i><span>Compartir</span><i>✦</i><span>Explorar</span><i>✦</i><span>Preguntar</span><i>✦</i>
+        <span>Aprender</span><i>✦</i><span>Investigar</span><i>✦</i><span>Crear</span><i>✦</i><span>Compartir</span><i>✦</i><span>Explorar</span><i>✦</i><span>Preguntar</span><i>✦</i>
+      </div>
+    </div>
+
     <section class="years" id="years">
-      <h2>Elegí tu Year</h2>
-      <div class="years__grid" id="yearGrid"></div>
+      <h2 class="reveal">Elegí tu Year</h2>
+      <div class="orbit" id="orbit">
+        <div class="orbit__ring" aria-hidden="true"></div>
+        <div class="orbit__ring orbit__ring--inner" aria-hidden="true"></div>
+        <div class="orbit__center" aria-hidden="true">
+          <span class="orbit__fq">FQ</span>
+          <span class="orbit__hint" id="orbitHint">Tocá tu Year</span>
+        </div>
+        <div class="orbit__spin" id="yearGrid"></div>
+      </div>
       <p class="years__hint">Elegí tu Year e ingresá tu contraseña para ver los proyectos.</p>
     </section>
 
     <footer class="foot">© FreeQuest Academy · Galería de proyectos de alumnos</footer>
   </main>
 
-  <!-- ============ CONTRASEÑA ============ -->
-  <dialog id="lockDialog" class="lock">
-    <form id="lockForm" method="dialog" class="lock__card">
-      <button type="button" class="lock__close" id="lockClose" aria-label="Cerrar">×</button>
-      <div class="lock__badge" id="lockBadge">Y1</div>
-      <h3 id="lockTitle">Year 1</h3>
-      <p>Ingresá la contraseña de tu Year.</p>
-      <label class="sr-only" for="lockInput">Contraseña</label>
-      <input id="lockInput" type="password" autocomplete="current-password" placeholder="Contraseña" required>
-      <p class="lock__error" id="lockError" role="alert"></p>
-      <button type="submit" class="btn-primary" id="lockSubmit">Entrar</button>
-    </form>
-  </dialog>
+  <!-- ============ PORTADA DE CADA YEAR (contraseña) ============ -->
+  <section id="gate" class="gate" hidden>
+    <a class="gate__back" href="#years">‹ Todos los Years</a>
+    <div class="gate__top">
+      <div class="wordmark wordmark--sm" aria-label="FreeQuest Academy">
+        <span class="wordmark__name"><span class="wm-free">FREE</span><span class="wm-quest">QUEST</span></span>
+        <span class="wordmark__sub">ACADEMY</span>
+      </div>
+      <div class="gate__globe"><svg viewBox="0 0 400 400" class="globe" aria-hidden="true">
+            <circle cx="200" cy="200" r="170" class="globe__line"/>
+            <g class="globe__meridians">
+              <ellipse cx="200" cy="200" rx="60" ry="170" class="globe__line"/>
+              <ellipse cx="200" cy="200" rx="120" ry="170" class="globe__line"/>
+              <line x1="200" y1="30" x2="200" y2="370" class="globe__line"/>
+            </g>
+            <ellipse cx="200" cy="200" rx="170" ry="60" class="globe__line"/>
+            <ellipse cx="200" cy="200" rx="170" ry="120" class="globe__line"/>
+            <line x1="30" y1="200" x2="370" y2="200" class="globe__line"/>
+            <g class="globe__orbit">
+              <circle cx="200" cy="200" r="105" class="globe__dash"/>
+              <line x1="200" y1="200" x2="295" y2="155" class="globe__ray"/>
+              <line x1="200" y1="200" x2="105" y2="155" class="globe__ray"/>
+              <line x1="200" y1="200" x2="248" y2="292" class="globe__ray"/>
+              <circle cx="295" cy="155" r="11" class="globe__node"/>
+              <circle cx="105" cy="155" r="11" class="globe__node globe__node--2"/>
+              <circle cx="248" cy="292" r="11" class="globe__node globe__node--3"/>
+            </g>
+            <circle cx="200" cy="200" r="7" class="globe__center"/>
+          </svg></div>
+    </div>
+    <svg class="gate__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5 12l7 7 7-7"/></svg>
+    <h2 class="gate__title">¡MIRÁ TODO LO QUE CREARON TUS COMPAÑEROS DE <span id="gateYearText">YEAR 1</span>!</h2>
+
+    <div class="flip" id="flip">
+      <div class="flip__inner">
+        <button type="button" class="flip__front" id="gateFront" aria-label="Ingresar la contraseña">
+          <svg class="padlock" viewBox="0 0 24 24" aria-hidden="true">
+            <path class="padlock__shackle" d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/>
+            <rect class="padlock__body" x="4.5" y="10" width="15" height="11" rx="2"/>
+          </svg>
+          <span class="flip__year" id="gateBadge">Y1</span>
+          <span class="flip__tap">Tocá para entrar</span>
+        </button>
+        <form class="flip__back" id="lockForm" novalidate>
+          <span class="flip__mini" id="gateMini">Y1</span>
+          <label for="lockInput">Contraseña de tu Year</label>
+          <div class="pw">
+            <input id="lockInput" type="password" autocomplete="current-password" placeholder="••••••••" required>
+            <button type="button" class="pw__eye" id="pwEye" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+          <p class="lock__error" id="lockError" role="alert"></p>
+          <button type="submit" class="btn-primary" id="lockSubmit">Entrar</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div class="warp" id="warp" aria-hidden="true"></div>
 
   <!-- ============ GALERÍA (lienzo con zoom) ============ -->
   <section id="gallery" class="gallery" hidden>
