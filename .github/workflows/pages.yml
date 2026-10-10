@@ -2,8 +2,8 @@ name: Publicar galería
 
 on:
   push:
-    branches: [main]
-    paths: ["site/**"]
+    branches: [claude/freequest-projects-gallery-7v6h43]
+    paths: ["site/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:

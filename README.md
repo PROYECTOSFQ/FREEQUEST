@@ -39,7 +39,7 @@ La contraseña queda recordada mientras la pestaña esté abierta; el botón **S
    y ejecutá `exportarProyectos`. Se crea `projects.source.json` en *Mi unidad*.
 2. Descargalo y copialo a `data/projects.source.json`.
 3. Ejecutá `node scripts/build.mjs` (necesita Node 18 o superior).
-4. Subí los cambios de `site/data/` a la rama `main`. La web se publica sola (GitHub Pages).
+4. Subí los cambios de `site/data/` a la rama `claude/freequest-projects-gallery-7v6h43`. La web se publica sola (GitHub Pages).
 
 La carpeta de Drive que se lee es **"11. Proyectos realizados por alumnos"**, con una subcarpeta por Year
 (`Y1` … `Y12`) y dentro una carpeta por proyecto. Si una carpeta de proyecto tiene subcarpetas, se toman como
@@ -68,7 +68,7 @@ pide acceso.
 ## Publicar
 
 Activá GitHub Pages en *Settings → Pages → Source: GitHub Actions*. El workflow
-`.github/workflows/pages.yml` publica la carpeta `site/` cada vez que cambia en `main`.
+`.github/workflows/pages.yml` publica la carpeta `site/` cada vez que cambia en la rama `claude/freequest-projects-gallery-7v6h43`.
 También se puede subir la carpeta `site/` tal cual a cualquier hosting estático (Netlify, Vercel, Hostinger, etc.).
 
 Para probarla en tu computadora: `cd site && python3 -m http.server 8000` y abrir <http://localhost:8000>.
