@@ -10,7 +10,7 @@
  *  4. Correr `node scripts/build.mjs` y publicar.
  */
 
-// ID de la carpeta "11. Proyectos realizados por alumnos" (lo que va después de
+// ID de la carpeta "01. PROYECTOS REALIZADOS POR ALUMNOS" (lo que va después de
 // /folders/ en la URL). Pegalo solo en script.google.com, no en este archivo del repo.
 const ROOT_FOLDER_ID = 'PEGAR_ACA_EL_ID_DE_LA_CARPETA'; // no subir el ID real a GitHub
 
@@ -24,7 +24,7 @@ function exportarProyectos() {
   const yearFolders = DriveApp.getFolderById(ROOT_FOLDER_ID).getFolders();
   while (yearFolders.hasNext()) {
     const yf = yearFolders.next();
-    const m = yf.getName().match(/^Y(?:ear)?\s*(\d{1,2})$/i);
+    const m = yf.getName().trim().match(/^Y(?:EAR)?\s*(\d{1,2})$/i); // "Y7", "YEAR 7 "
     if (!m || !years[m[1]]) continue;
     const topics = years[m[1]];
 
