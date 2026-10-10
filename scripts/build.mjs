@@ -65,6 +65,7 @@ function cleanTitle(title) {
   t = t.replace(/^proyectos?\s*:?\s*/i, "");
   t = t.replace(/^["“”']+|["“”']+$/g, "").trim();
   if (!t) t = title.trim();
+  t = t.replace(/\bempres$/i, "empresa"); // título cortado en Drive
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 

@@ -256,6 +256,11 @@ function buildWorld(data) {
   Object.assign(hub.style, { left: `${-HUB_R}px`, top: `${-HUB_R}px`, width: `${HUB_R * 2}px`, height: `${HUB_R * 2}px` });
   hub.append(el("div", "hub__y", `Y${data.year}`), el("div", "hub__label", "YEAR"));
   world.append(hub);
+  if (!placed.length) {
+    const msg = el("div", "topic__empty", "Todavía no hay proyectos cargados para este Year. ¡Muy pronto!");
+    Object.assign(msg.style, { left: "-260px", top: `${HUB_R + 50}px`, width: "520px", fontSize: "26px", color: "var(--cream)" });
+    world.append(msg);
+  }
 
   placed.forEach((t, idx) => {
     t.accent = ACCENTS[idx % ACCENTS.length];
@@ -295,7 +300,7 @@ function buildWorld(data) {
     world.append(node);
   });
 
-  const extent = placed.length ? RING_0 + (rings - 1) * RING_GAP + TOPIC_D / 2 + 40 : HUB_R + 80;
+  const extent = placed.length ? RING_0 + (rings - 1) * RING_GAP + TOPIC_D / 2 + 40 : HUB_R + 220;
   state.bounds = { x: -extent, y: -extent, w: extent * 2, h: extent * 2 };
 }
 
