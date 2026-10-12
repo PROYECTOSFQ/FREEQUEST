@@ -18,6 +18,7 @@
 
   <!-- ============ PORTADA ============ -->
   <main id="home">
+    <a class="star-chip" href="#destacados"><span aria-hidden="true">★</span> Destacados</a>
     <section class="hero">
       <div class="hero__text">
         <div class="wordmark" aria-label="FreeQuest Academy">
@@ -68,7 +69,10 @@
         <li class="pill reveal"><span class="pill__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></span>Crear</li>
       </ul>
-      <a class="btn-cta" href="#years">VER LA GALERÍA</a>
+      <div class="cta-row">
+        <a class="btn-cta" href="#years">VER LA GALERÍA</a>
+        <a class="btn-star" href="#destacados"><span class="btn-star__icon" aria-hidden="true">★</span>Proyectos destacados</a>
+      </div>
     </section>
 
     <div class="marquee" aria-hidden="true">
@@ -150,6 +154,20 @@
         </form>
       </div>
     </div>
+  </section>
+
+  <!-- ============ PROYECTOS DESTACADOS (público) ============ -->
+  <section id="featured" class="featured" hidden>
+    <a class="gate__back" href="#years">‹ Volver al inicio</a>
+    <header class="featured__head">
+      <div class="burst" aria-hidden="true"><span>★</span></div>
+      <p class="featured__eyebrow">FreeQuest Academy</p>
+      <h2 class="featured__title">Proyectos destacados</h2>
+      <p class="featured__lead">Una selección de trabajos que nos inspiraron. Abiertos para toda la comunidad, sin contraseña.</p>
+    </header>
+    <div class="spot" id="spot"></div>
+    <div class="chips" id="featChips" role="toolbar" aria-label="Filtrar por Year"></div>
+    <div class="fgrid" id="featGrid"></div>
   </section>
 
   <div class="warp" id="warp" aria-hidden="true"></div>

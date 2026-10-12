@@ -131,6 +131,18 @@ async function main() {
     summary.push({ Year: y, Proyectos: topics.length, Trabajos: topics.reduce((n, t) => n + t.items.length, 0) });
   }
   console.table(summary);
+
+  // Proyectos destacados: públicos, sin contraseña.
+  // Nombre de archivo esperado: "Nombre Apellido - YEAR 12" (el Year es opcional).
+  const featured = prepareYear(source.destacados).flatMap((t) =>
+    t.items.map((item) => {
+      const base = item.name.replace(/(\.[a-z0-9]{2,5})+$/i, "");
+      const m = base.match(/^(.*?)\s*[-–]\s*Y(?:EAR)?\s*(\d{1,2})\s*$/i);
+      return { project: t.title, student: (m ? m[1] : base).trim(), year: m ? Number(m[2]) : null, id: item.id, mimeType: item.mimeType, name: item.name };
+    }),
+  );
+  await writeFile(path.join(OUT_DIR, "destacados.json"), JSON.stringify({ items: featured }, null, 1) + "\n");
+  console.log(`Destacados: ${featured.length} trabajos (públicos)`);
 }
 
 main().catch((err) => {

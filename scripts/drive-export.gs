@@ -21,9 +21,19 @@ function exportarProyectos() {
   const years = {};
   for (let y = 1; y <= 12; y++) years[String(y)] = [];
 
+  const destacados = [];
   const yearFolders = DriveApp.getFolderById(ROOT_FOLDER_ID).getFolders();
   while (yearFolders.hasNext()) {
     const yf = yearFolders.next();
+    // "PROYECTOS DESTACADOS": página pública, una carpeta por proyecto
+    if (/destacados/i.test(yf.getName())) {
+      const tfs = yf.getFolders();
+      while (tfs.hasNext()) {
+        const tf = tfs.next();
+        destacados.push({ title: tf.getName().trim(), folderId: tf.getId(), items: listFiles_(tf, null) });
+      }
+      continue;
+    }
     const m = yf.getName().trim().match(/^Y(?:EAR)?\s*(\d{1,2})$/i); // "Y7", "YEAR 7 "
     if (!m || !years[m[1]]) continue;
     const topics = years[m[1]];
@@ -45,7 +55,7 @@ function exportarProyectos() {
     }
   }
 
-  const json = JSON.stringify({ generated: new Date().toISOString(), years: years }, null, 2);
+  const json = JSON.stringify({ generated: new Date().toISOString(), years: years, destacados: destacados }, null, 2);
   const name = 'projects.source.json';
   const existing = DriveApp.getRootFolder().getFilesByName(name);
   if (existing.hasNext()) existing.next().setContent(json);

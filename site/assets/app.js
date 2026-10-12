@@ -666,18 +666,20 @@ stage.addEventListener("wheel", (e) => {
 // ---------------------------------------------------------------- visor
 const viewer = $("#viewer");
 let viewerIndex = -1;
+let viewerList = [];   // [{ item, topic }]: el Year abierto o los destacados
 
-function openViewer(item) {
-  viewerIndex = state.flat.findIndex((f) => f.item === item);
+function openViewer(item, _title, list = state.flat) {
+  viewerList = list;
+  viewerIndex = list.findIndex((f) => f.item === item || f.item.id === item.id);
   renderViewer();
   viewer.hidden = false;
   $("#vClose").focus();
 }
 function renderViewer() {
-  const { item, topic } = state.flat[viewerIndex];
+  const { item, topic } = viewerList[viewerIndex];
   $("#vTopic").textContent = topic.title;
   $("#vTitle").textContent = item.student ? `${item.student} · ${prettyName(item.name)}` : prettyName(item.name);
-  $("#vCount").textContent = `${viewerIndex + 1} / ${state.flat.length}`;
+  $("#vCount").textContent = `${viewerIndex + 1} / ${viewerList.length}`;
   $("#vOpen").href = openUrl(item);
   const frame = $("#vFrame");
   const loading = el("div", "loading", "Cargando…");
@@ -690,24 +692,23 @@ function renderViewer() {
   iframe.addEventListener("load", () => loading.remove());
   frame.replaceChildren(loading, iframe);
   $("#vPrev").disabled = viewerIndex <= 0;
-  $("#vNext").disabled = viewerIndex >= state.flat.length - 1;
+  $("#vNext").disabled = viewerIndex >= viewerList.length - 1;
   // mantener el mapa sincronizado con el proyecto que se está viendo
   const tIdx = state.topics.indexOf(topic);
-  if (!state.listMode && state.step !== tIdx + 1) goToStep(tIdx + 1, false);
+  if (!gallery.hidden && tIdx >= 0 && !state.listMode && state.step !== tIdx + 1) goToStep(tIdx + 1, false);
 }
 function closeViewer() {
   if (viewer.hidden) return;
   viewer.hidden = true;
   $("#vFrame").replaceChildren();
-  stage.focus({ preventScroll: true });
+  if (!gallery.hidden) stage.focus({ preventScroll: true });
 }
 $("#vClose").addEventListener("click", closeViewer);
 $("#vPrev").addEventListener("click", () => { if (viewerIndex > 0) { viewerIndex--; renderViewer(); } });
-$("#vNext").addEventListener("click", () => { if (viewerIndex < state.flat.length - 1) { viewerIndex++; renderViewer(); } });
+$("#vNext").addEventListener("click", () => { if (viewerIndex < viewerList.length - 1) { viewerIndex++; renderViewer(); } });
 
 // ---------------------------------------------------------------- teclado
 document.addEventListener("keydown", (e) => {
-  if (gallery.hidden) return;
   if (e.target.matches?.("input")) return;
   if (!viewer.hidden) {
     if (e.key === "Escape") closeViewer();
@@ -715,7 +716,7 @@ document.addEventListener("keydown", (e) => {
     else if (e.key === "ArrowLeft") $("#vPrev").click();
     return;
   }
-  if (state.listMode) return;
+  if (gallery.hidden || state.listMode) return;
   if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); goToStep(state.step + 1); }
   else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); goToStep(state.step - 1); }
   else if (e.key === "Escape" || e.key === "Home") goToStep(0);
@@ -723,10 +724,141 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "-") zoomAt(1 / 1.3, stage.clientWidth / 2, stage.clientHeight / 2);
 });
 
+// ---------------------------------------------------------------- destacados (público)
+const featured = $("#featured");
+let featData = null, featFilter = "all", spotIdx = 0, spotTimer = null;
+
+async function loadFeatured() {
+  if (!featData) {
+    try {
+      const res = await fetch("data/destacados.json", { cache: "no-cache" });
+      featData = res.ok ? (await res.json()).items || [] : [];
+    } catch { featData = []; }
+  }
+  return featData;
+}
+const featList = () => (featFilter === "all" ? featData : featData.filter((f) => String(f.year) === featFilter));
+const featViewerList = () => featList().map((f) => ({
+  item: { id: f.id, mimeType: f.mimeType, name: f.student },
+  topic: { title: f.year ? `${f.project} · Year ${f.year}` : f.project },
+}));
+
+function featMedia(node, f) {
+  node.replaceChildren(iconSvg(f.mimeType));
+  const img = new Image();
+  img.referrerPolicy = "no-referrer";
+  img.onload = () => { if (img.naturalWidth > 1) { node.style.backgroundImage = `url("${img.src}")`; node.replaceChildren(); } };
+  img.src = thumbUrl(f.id);
+}
+
+function renderSpot() {
+  const list = featList();
+  const spot = $("#spot");
+  clearInterval(spotTimer);
+  spot.hidden = !list.length;
+  if (!list.length) return;
+  spotIdx = spotIdx % list.length;
+  const f = list[spotIdx];
+  const media = el("div", "spot__media is-anim");
+  featMedia(media, f);
+  const body = el("div", "spot__body spot__in");
+  if (f.year) body.append(el("span", "spot__badge", `★ YEAR ${f.year}`));
+  body.append(el("h3", "spot__project", f.project), el("p", "spot__student", f.student));
+  const actions = el("div", "spot__actions");
+  const open = el("button", "spot__open", "Ver proyecto");
+  open.type = "button";
+  open.addEventListener("click", () => openViewer(f, null, featViewerList()));
+  actions.append(open);
+  if (list.length > 1) {
+    const dots = el("div", "spot__dots");
+    list.forEach((_, i) => {
+      const d = el("button", i === spotIdx ? "is-on" : "");
+      d.type = "button";
+      d.setAttribute("aria-label", `Destacado ${i + 1}`);
+      d.addEventListener("click", () => { spotIdx = i; renderSpot(); });
+      dots.append(d);
+    });
+    actions.append(dots);
+    if (!reduceMotion) spotTimer = setInterval(() => { if (viewer.hidden && !featured.hidden) { spotIdx++; renderSpot(); } }, 7000);
+  }
+  body.append(actions);
+  spot.replaceChildren(media, body);
+}
+
+function renderFeatGrid() {
+  const grid = $("#featGrid");
+  const list = featList();
+  grid.replaceChildren();
+  if (!list.length) {
+    grid.append(el("p", "fempty", "Muy pronto vas a ver acá los proyectos destacados."));
+    return;
+  }
+  if (list.length === 1) return; // ya se ve en la tarjeta grande
+  list.forEach((f, i) => {
+    const card = el("button", "fcard");
+    card.type = "button";
+    card.style.setProperty("--i", i);
+    card.setAttribute("aria-label", `${f.project}, de ${f.student}`);
+    const media = el("div", "fcard__media");
+    featMedia(media, f);
+    const body = el("div", "fcard__body");
+    body.append(el("span", "fcard__project", f.project), el("span", "fcard__student", f.student));
+    card.append(media, body, el("span", "fcard__shine"), el("span", "fcard__star", "★"));
+    if (f.year) card.append(el("span", "fcard__year", `Y${f.year}`));
+    card.addEventListener("click", () => openViewer(f, null, featViewerList()));
+    // la tarjeta se inclina siguiendo el mouse
+    card.addEventListener("pointermove", (e) => {
+      if (reduceMotion || e.pointerType !== "mouse") return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.style.transform = `rotateX(${(0.5 - y) * 10}deg) rotateY(${(x - 0.5) * 12}deg) translateY(-4px)`;
+      card.style.setProperty("--sx", `${x * 100}%`);
+      card.style.setProperty("--sy", `${y * 100}%`);
+    });
+    card.addEventListener("pointerleave", () => { card.style.transform = ""; });
+    grid.append(card);
+  });
+}
+
+function renderChips() {
+  const chips = $("#featChips");
+  const years = [...new Set(featData.map((f) => f.year).filter(Boolean))].sort((a, b) => a - b);
+  chips.hidden = years.length < 2;
+  chips.replaceChildren();
+  [["all", "Todos"], ...years.map((y) => [String(y), `Year ${y}`])].forEach(([v, label]) => {
+    const b = el("button", null, label);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(v === featFilter));
+    b.addEventListener("click", () => { featFilter = v; spotIdx = 0; renderChips(); renderSpot(); renderFeatGrid(); });
+    chips.append(b);
+  });
+}
+
+async function showFeatured() {
+  await loadFeatured();
+  $("#home").hidden = true;
+  gate.hidden = true;
+  featured.hidden = false;
+  window.scrollTo(0, 0);
+  renderChips();
+  renderSpot();
+  renderFeatGrid();
+}
+function hideFeatured() {
+  featured.hidden = true;
+  clearInterval(spotTimer);
+}
+
 // ---------------------------------------------------------------- rutas
 async function route() {
   const m = location.hash.match(/^#year-(\d{1,2})$/);
   const year = m && Number(m[1]);
+  if (location.hash === "#destacados") {
+    if (!gallery.hidden) closeGallery();
+    showFeatured();
+    return;
+  }
+  hideFeatured();
   if (!year || year < 1 || year > YEARS) {
     if (!gallery.hidden) closeGallery();
     hideGate();
