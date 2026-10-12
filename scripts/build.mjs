@@ -89,7 +89,7 @@ function prepareYear(topics = []) {
       const k = normalize(item.name);
       if (seen.has(k)) continue;
       seen.add(k);
-      entry.items.push({ name: item.name, id: item.id, mimeType: item.mimeType, ...(item.student ? { student: item.student } : {}) });
+      entry.items.push({ name: item.name, id: item.id, mimeType: item.mimeType, ...(item.student ? { student: item.student } : {}), ...(item.description ? { description: item.description.trim() } : {}) });
     }
   }
   return [...byKey.values()]
@@ -138,7 +138,7 @@ async function main() {
     t.items.map((item) => {
       const base = item.name.replace(/(\.[a-z0-9]{2,5})+$/i, "");
       const m = base.match(/^(.*?)\s*[-–]\s*Y(?:EAR)?\s*(\d{1,2})\s*$/i);
-      return { project: t.title, student: (m ? m[1] : base).trim(), year: m ? Number(m[2]) : null, id: item.id, mimeType: item.mimeType, name: item.name };
+      return { project: t.title, student: (m ? m[1] : base).trim(), year: m ? Number(m[2]) : null, id: item.id, mimeType: item.mimeType, name: item.name, description: item.description || "" };
     }),
   );
   await writeFile(path.join(OUT_DIR, "destacados.json"), JSON.stringify({ items: featured }, null, 1) + "\n");

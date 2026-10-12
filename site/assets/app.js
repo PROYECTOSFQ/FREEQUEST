@@ -764,6 +764,7 @@ function renderSpot() {
   const body = el("div", "spot__body spot__in");
   if (f.year) body.append(el("span", "spot__badge", `★ YEAR ${f.year}`));
   body.append(el("h3", "spot__project", f.project), el("p", "spot__student", f.student));
+  if (f.description) body.append(el("p", "spot__desc", f.description));
   const actions = el("div", "spot__actions");
   const open = el("button", "spot__open", "Ver proyecto");
   open.type = "button";
@@ -803,6 +804,7 @@ function renderFeatGrid() {
     featMedia(media, f);
     const body = el("div", "fcard__body");
     body.append(el("span", "fcard__project", f.project), el("span", "fcard__student", f.student));
+    if (f.description) body.append(el("span", "fcard__desc", f.description));
     card.append(media, body, el("span", "fcard__shine"), el("span", "fcard__star", "★"));
     if (f.year) card.append(el("span", "fcard__year", `Y${f.year}`));
     card.addEventListener("click", () => openViewer(f, null, featViewerList()));

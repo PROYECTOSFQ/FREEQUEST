@@ -389,7 +389,7 @@ button { cursor: pointer; }
 .featured__lead { margin: 0; color: rgba(246, 242, 234, 0.8); font-size: clamp(1rem, 1.8vw, 1.15rem); line-height: 1.6; }
 
 /* Tarjeta grande en rotación */
-.spot { max-width: 1100px; margin: 0 auto 2.4rem; display: grid; grid-template-columns: 1.3fr 1fr; gap: 0; border-radius: 28px; overflow: hidden; background: var(--cream); color: var(--navy); box-shadow: 14px 16px 0 var(--purple); }
+.spot { max-width: 1100px; margin: 0 auto 2.4rem; display: grid; grid-template-columns: 1fr 1.1fr; gap: 0; border-radius: 28px; overflow: hidden; background: var(--cream); color: var(--navy); box-shadow: 14px 16px 0 var(--purple); }
 .spot[hidden] { display: none; }
 .spot__media { position: relative; min-height: 320px; background: var(--navy-3) center / cover no-repeat; display: grid; place-items: center; overflow: hidden; }
 .spot__media.is-anim { animation: kenburns 9s ease-in-out both; }
@@ -399,6 +399,8 @@ button { cursor: pointer; }
 .spot__badge { align-self: flex-start; padding: 0.3rem 0.8rem; border-radius: 999px; background: var(--navy); color: var(--gold); font-weight: 900; font-size: 0.85rem; letter-spacing: 0.06em; }
 .spot__project { margin: 0; font-size: clamp(1.6rem, 3.2vw, 2.4rem); font-weight: 900; line-height: 1.1; overflow-wrap: anywhere; }
 .spot__student { margin: 0; font-size: 1.15rem; color: var(--purple); font-weight: 700; }
+.spot__desc { margin: 0.2rem 0 0; font-size: 1rem; line-height: 1.65; color: rgba(5, 30, 53, 0.85); max-width: 60ch; }
+.fcard__desc { font-size: 0.88rem; line-height: 1.45; color: rgba(5, 30, 53, 0.75); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0.2rem; }
 .spot__actions { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.6rem; flex-wrap: wrap; }
 .spot__open { border: 0; border-radius: 12px; background: var(--gold); color: var(--navy); padding: 0.85rem 1.4rem; font-weight: 900; font-size: 1rem; transition: transform 0.15s; }
 .spot__open:hover { transform: translateY(-2px); }

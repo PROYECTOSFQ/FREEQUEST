@@ -14,7 +14,8 @@ Un alumno de Year 1 no puede ver los proyectos de Year 12, y al revés.
 - **Vista lista** con buscador por proyecto o por alumno.
 - **Proyectos destacados** (`#destacados`), públicos y sin contraseña. Salen de la carpeta
   "PROYECTOS DESTACADOS" de Drive: una carpeta por proyecto y archivos nombrados
-  "Nombre Apellido - YEAR 12".
+  "Nombre Apellido - YEAR 12". Para sumar una descripción, en Drive: clic derecho en el archivo →
+  Información del archivo → Detalles → Descripción.
 - **Portada de cada Year** con su propio enlace para mandar a cada grupo, por ejemplo
   `https://proyectosfq.github.io/FREEQUEST/#year-8`. La tarjeta del Year se da vuelta para poner la contraseña.
 

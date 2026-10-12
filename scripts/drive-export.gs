@@ -78,6 +78,9 @@ function listFiles_(folder, student) {
     const mime = f.getMimeType();
     if (SKIP.test(f.getName()) || mime === 'application/vnd.google-apps.shortcut') continue;
     const item = { name: f.getName(), id: f.getId(), mimeType: mime };
+    // Descripción del archivo en Drive (clic derecho → Información del archivo → Detalles → Descripción)
+    const description = f.getDescription();
+    if (description) item.description = description;
     if (student) item.student = student;
     out.push(item);
   }
