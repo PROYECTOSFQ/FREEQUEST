@@ -743,6 +743,7 @@ async function loadCommentCounts(year) {
 function setCommentsButton(item) {
   const on = !gallery.hidden && commentsOn(state.data?.year);
   cBtn.hidden = !on;
+  $("#cCta").hidden = !on || !cPanel.hidden;
   if (!on) { cPanel.hidden = true; return; }
   const n = commentCounts[item.id] || 0;
   $("#vCommentsCount").textContent = n ? String(n) : "";
@@ -781,12 +782,14 @@ async function loadComments(item) {
 function toggleComments(open = cPanel.hidden) {
   cPanel.hidden = !open;
   cBtn.setAttribute("aria-expanded", String(open));
+  $("#cCta").hidden = open || cBtn.hidden;
   if (open) {
     loadComments(viewerList[viewerIndex].item);
     try { $("#cName").value ||= localStorage.getItem("fq-comment-name") || ""; } catch { /* sin storage */ }
   }
 }
 cBtn.addEventListener("click", () => toggleComments());
+$("#cCta").addEventListener("click", () => { toggleComments(true); $("#cName").value ? $("#cText").focus() : $("#cName").focus(); });
 $("#cClose").addEventListener("click", () => toggleComments(false));
 $("#cText").addEventListener("input", (e) => { $("#cLeft").textContent = String(500 - e.target.value.length); });
 

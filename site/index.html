@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css?v=202610141604">
+  <link rel="stylesheet" href="assets/styles.css?v=202610141708">
 </head>
 <body>
   <canvas id="sky" class="sky" aria-hidden="true"></canvas>
@@ -218,9 +218,9 @@
       </div>
       <div class="viewer__actions">
         <span class="viewer__count" id="vCount"></span>
-        <button class="chip" id="vComments" type="button" aria-expanded="false" aria-controls="cPanel" hidden>
-          <svg class="chip__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
-          Comentarios <span class="chip__count" id="vCommentsCount"></span>
+        <button class="cbtn" id="vComments" type="button" aria-expanded="false" aria-controls="cPanel" hidden>
+          <svg class="cbtn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
+          <span class="cbtn__label">Comentarios</span> <span class="chip__count" id="vCommentsCount"></span>
         </button>
         <a class="chip chip--ghost" id="vOpen" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
         <button class="viewer__close" id="vClose" aria-label="Cerrar">×</button>
@@ -228,7 +228,13 @@
     </div>
     <div class="viewer__body">
       <button class="viewer__nav viewer__nav--prev" id="vPrev" aria-label="Trabajo anterior">‹</button>
-      <div class="viewer__frame" id="vFrame"></div>
+      <div class="viewer__stage">
+        <div class="viewer__frame" id="vFrame"></div>
+        <button class="cta-comment" id="cCta" type="button" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
+          <span><strong>¿Qué te pareció?</strong> ¡Dejale un comentario!</span>
+        </button>
+      </div>
       <button class="viewer__nav viewer__nav--next" id="vNext" aria-label="Trabajo siguiente">›</button>
       <aside class="cpanel" id="cPanel" hidden aria-label="Comentarios">
         <header class="cpanel__head">
@@ -251,6 +257,6 @@
     </div>
   </div>
 
-  <script src="assets/app.js?v=202610141649" type="module"></script>
+  <script src="assets/app.js?v=202610141708" type="module"></script>
 </body>
 </html>
