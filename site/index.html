@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css?v=202610120320">
+  <link rel="stylesheet" href="assets/styles.css?v=202610141604">
 </head>
 <body>
   <canvas id="sky" class="sky" aria-hidden="true"></canvas>
@@ -218,6 +218,10 @@
       </div>
       <div class="viewer__actions">
         <span class="viewer__count" id="vCount"></span>
+        <button class="chip" id="vComments" type="button" aria-expanded="false" aria-controls="cPanel" hidden>
+          <svg class="chip__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
+          Comentarios <span class="chip__count" id="vCommentsCount"></span>
+        </button>
         <a class="chip chip--ghost" id="vOpen" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
         <button class="viewer__close" id="vClose" aria-label="Cerrar">×</button>
       </div>
@@ -226,9 +230,27 @@
       <button class="viewer__nav viewer__nav--prev" id="vPrev" aria-label="Trabajo anterior">‹</button>
       <div class="viewer__frame" id="vFrame"></div>
       <button class="viewer__nav viewer__nav--next" id="vNext" aria-label="Trabajo siguiente">›</button>
+      <aside class="cpanel" id="cPanel" hidden aria-label="Comentarios">
+        <header class="cpanel__head">
+          <h3>Comentarios</h3>
+          <button class="cpanel__close" id="cClose" type="button" aria-label="Cerrar comentarios">×</button>
+        </header>
+        <div class="cpanel__list" id="cList"></div>
+        <form class="cpanel__form" id="cForm" novalidate>
+          <label for="cName">Tu nombre</label>
+          <input id="cName" maxlength="40" autocomplete="given-name" placeholder="Ej.: Sofía">
+          <label for="cText">¿Qué te gustó de este proyecto?</label>
+          <textarea id="cText" maxlength="500" rows="3" placeholder="Contale algo lindo a tu compañero o compañera…"></textarea>
+          <div class="cpanel__row">
+            <span class="cpanel__left" id="cLeft">500</span>
+            <button class="btn-primary" id="cSend" type="submit">Enviar</button>
+          </div>
+          <p class="cpanel__msg" id="cMsg" role="status"></p>
+        </form>
+      </aside>
     </div>
   </div>
 
-  <script src="assets/app.js?v=202610120320" type="module"></script>
+  <script src="assets/app.js?v=202610141604" type="module"></script>
 </body>
 </html>

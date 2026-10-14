@@ -78,3 +78,14 @@ Activá GitHub Pages en *Settings → Pages → Source: GitHub Actions*. El work
 También se puede subir la carpeta `site/` tal cual a cualquier hosting estático (Netlify, Vercel, Hostinger, etc.).
 
 Para probarla en tu computadora: `cd site && python3 -m http.server 8000` y abrir <http://localhost:8000>.
+
+## Comentarios entre compañeros
+
+Los alumnos pueden dejar comentarios en los trabajos de su Year. Se guardan en una planilla de Google
+de la escuela y aparecen en la web recién cuando un profe cambia la columna **Estado** a `aprobado`.
+
+1. Instalar `scripts/comentarios.gs` en una planilla nueva (las instrucciones están al principio del archivo).
+   El archivo de claves (`config/claves.gs`) no se sube a GitHub.
+2. Pegar la URL de la aplicación web en `COMMENTS.url`, al principio de `site/assets/app.js`.
+3. Elegir en `COMMENTS.years` qué Years tienen comentarios (empezamos con Year 8).
+

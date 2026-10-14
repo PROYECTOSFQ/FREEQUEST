@@ -6,6 +6,11 @@
 
 const YEARS = 12;
 const SESSION_KEY = (y) => `fq-gallery-year-${y}`;
+
+// Comentarios: se guardan en una planilla de Google (ver scripts/comentarios.gs).
+// url: dirección de la aplicación web de Apps Script. years: Years que tienen comentarios.
+const COMMENTS = { url: "", years: [8] };
+const commentsOn = (year) => !!COMMENTS.url && COMMENTS.years.includes(Number(year));
 const ACCENTS = ["#f1bc70", "#4b489c", "#e9a84b", "#6f6cc4"];
 
 const HUB_R = 170;          // radio del círculo central
@@ -104,6 +109,7 @@ function iconSvg(mime) {
 function workCard(item, topicTitle, onOpen) {
   const card = el("button", "work");
   card.type = "button";
+  card.dataset.id = item.id;
   card.title = item.student ? `${item.student} — ${prettyName(item.name)}` : prettyName(item.name);
   const thumb = el("div", "work__thumb");
   thumb.append(iconSvg(item.mimeType));
@@ -504,6 +510,7 @@ function openGallery(data) {
   setTimeout(() => hint.classList.add("is-hidden"), 6000);
   requestAnimationFrame(() => { goToStep(0, false); stage.focus({ preventScroll: true }); });
   refreshTiles();
+  loadCommentCounts(data.year);
 }
 
 function closeGallery() {
@@ -691,16 +698,140 @@ function renderViewer() {
   iframe.title = prettyName(item.name);
   iframe.addEventListener("load", () => loading.remove());
   frame.replaceChildren(loading, iframe);
+  setCommentsButton(item);
   $("#vPrev").disabled = viewerIndex <= 0;
   $("#vNext").disabled = viewerIndex >= viewerList.length - 1;
   // mantener el mapa sincronizado con el proyecto que se está viendo
   const tIdx = state.topics.indexOf(topic);
   if (!gallery.hidden && tIdx >= 0 && !state.listMode && state.step !== tIdx + 1) goToStep(tIdx + 1, false);
 }
+// ---------------------------------------------------------------- comentarios
+const cPanel = $("#cPanel");
+const cBtn = $("#vComments");
+const commentCounts = {};
+
+async function commentKey(year) {
+  const pw = sessionGet(year);
+  if (!pw) return null;
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`freequest-comentarios:${year}:${pw}`));
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function commentsGet(params) {
+  const year = state.data?.year;
+  const clave = await commentKey(year);
+  const qs = new URLSearchParams({ ...params, year, clave });
+  const res = await fetch(`${COMMENTS.url}?${qs}`);
+  const out = await res.json();
+  if (!out.ok) throw new Error(out.error);
+  return out;
+}
+
+async function loadCommentCounts(year) {
+  Object.keys(commentCounts).forEach((k) => delete commentCounts[k]);
+  if (!commentsOn(year)) return;
+  try {
+    const { cuenta } = await commentsGet({ accion: "contar" });
+    Object.assign(commentCounts, cuenta);
+    document.querySelectorAll("#gallery .work[data-id]").forEach((card) => {
+      card.querySelector(".work__cmt")?.remove();
+      const n = commentCounts[card.dataset.id];
+      if (n) card.append(el("span", "work__cmt", `💬 ${n}`));
+    });
+  } catch { /* sin conexión: las tarjetas se ven igual */ }
+}
+
+function setCommentsButton(item) {
+  const on = !gallery.hidden && commentsOn(state.data?.year);
+  cBtn.hidden = !on;
+  if (!on) { cPanel.hidden = true; return; }
+  const n = commentCounts[item.id] || 0;
+  $("#vCommentsCount").textContent = n ? String(n) : "";
+  if (!cPanel.hidden) loadComments(item);
+}
+
+function formatDate(v) {
+  const d = new Date(v);
+  return isNaN(d) ? "" : d.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
+}
+
+async function loadComments(item) {
+  const list = $("#cList");
+  list.replaceChildren(el("p", "cpanel__empty", "Cargando comentarios…"));
+  $("#cMsg").textContent = "";
+  try {
+    const { comentarios } = await commentsGet({ accion: "listar", archivo: item.id });
+    if (viewerList[viewerIndex]?.item !== item) return; // ya se pasó a otro trabajo
+    list.replaceChildren();
+    if (!comentarios.length) {
+      list.append(el("p", "cpanel__empty", "Todavía no hay comentarios. ¡Escribí el primero!"));
+      return;
+    }
+    comentarios.forEach((c) => {
+      const box = el("div", "cmt");
+      const who = el("div", "cmt__author", c.autor);
+      who.append(el("span", "cmt__date", formatDate(c.fecha)));
+      box.append(who, el("p", "cmt__text", c.texto));
+      list.append(box);
+    });
+  } catch {
+    list.replaceChildren(el("p", "cpanel__empty", "No se pudieron cargar los comentarios. Revisá tu conexión y volvé a abrir este panel."));
+  }
+}
+
+function toggleComments(open = cPanel.hidden) {
+  cPanel.hidden = !open;
+  cBtn.setAttribute("aria-expanded", String(open));
+  if (open) {
+    loadComments(viewerList[viewerIndex].item);
+    try { $("#cName").value ||= localStorage.getItem("fq-comment-name") || ""; } catch { /* sin storage */ }
+  }
+}
+cBtn.addEventListener("click", () => toggleComments());
+$("#cClose").addEventListener("click", () => toggleComments(false));
+$("#cText").addEventListener("input", (e) => { $("#cLeft").textContent = String(500 - e.target.value.length); });
+
+$("#cForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = $("#cMsg");
+  const autor = $("#cName").value.trim();
+  const texto = $("#cText").value.trim();
+  msg.className = "cpanel__msg is-error";
+  if (!autor) { msg.textContent = "Escribí tu nombre."; $("#cName").focus(); return; }
+  if (texto.length < 3) { msg.textContent = "Escribí tu comentario."; $("#cText").focus(); return; }
+  const { item, topic } = viewerList[viewerIndex];
+  const send = $("#cSend");
+  send.disabled = true;
+  send.textContent = "Enviando…";
+  try {
+    const res = await fetch(COMMENTS.url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        year: state.data.year, clave: await commentKey(state.data.year), archivo: item.id,
+        proyecto: topic.title, trabajo: item.student ? `${item.student} · ${prettyName(item.name)}` : prettyName(item.name),
+        autor, texto,
+      }),
+    });
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.error);
+    try { localStorage.setItem("fq-comment-name", autor); } catch { /* sin storage */ }
+    $("#cText").value = "";
+    $("#cLeft").textContent = "500";
+    msg.className = "cpanel__msg is-ok";
+    msg.textContent = "¡Gracias! Tu comentario va a aparecer cuando lo revise un profe.";
+  } catch {
+    msg.textContent = "No se pudo enviar. Probá de nuevo en un rato.";
+  } finally {
+    send.disabled = false;
+    send.textContent = "Enviar";
+  }
+});
+
 function closeViewer() {
   if (viewer.hidden) return;
   viewer.hidden = true;
   $("#vFrame").replaceChildren();
+  toggleComments(false);
   if (!gallery.hidden) stage.focus({ preventScroll: true });
 }
 $("#vClose").addEventListener("click", closeViewer);
@@ -709,7 +840,7 @@ $("#vNext").addEventListener("click", () => { if (viewerIndex < viewerList.lengt
 
 // ---------------------------------------------------------------- teclado
 document.addEventListener("keydown", (e) => {
-  if (e.target.matches?.("input")) return;
+  if (e.target.matches?.("input, textarea")) return;
   if (!viewer.hidden) {
     if (e.key === "Escape") closeViewer();
     else if (e.key === "ArrowRight") $("#vNext").click();
