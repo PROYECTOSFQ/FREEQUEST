@@ -9,7 +9,7 @@ const SESSION_KEY = (y) => `fq-gallery-year-${y}`;
 
 // Comentarios: se guardan en una planilla de Google (ver scripts/comentarios.gs).
 // url: dirección de la aplicación web de Apps Script. years: Years que tienen comentarios.
-const COMMENTS = { url: "", years: [8] };
+const COMMENTS = { url: "https://script.google.com/macros/s/AKfycbynPTFuq9SlOxbmpm1PZ8wxFs4N0QFyA1uOOXp6tvB8Db9svKVKeCK9p6FI5G4_-0E1lA/exec", years: [8] };
 const commentsOn = (year) => !!COMMENTS.url && COMMENTS.years.includes(Number(year));
 const ACCENTS = ["#f1bc70", "#4b489c", "#e9a84b", "#6f6cc4"];
 
