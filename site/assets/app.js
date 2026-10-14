@@ -818,7 +818,7 @@ $("#cForm").addEventListener("submit", async (e) => {
     $("#cText").value = "";
     $("#cLeft").textContent = "500";
     msg.className = "cpanel__msg is-ok";
-    msg.textContent = "¡Gracias! Tu comentario va a aparecer cuando lo revise un profe.";
+    msg.textContent = "Gracias. Tu comentario fue enviado y se publicará una vez que sea aprobado.";
   } catch {
     msg.textContent = "No se pudo enviar. Probá de nuevo en un rato.";
   } finally {
